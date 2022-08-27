@@ -2,7 +2,7 @@ const { fetchJSON } = require("./apiHelpers");
 
 let restaurants;
 let users;
-let reservations = [];
+let reservations;
 
 const usersList = document.querySelector("#users-list");
 
@@ -58,15 +58,23 @@ const renderRestaurants = () => {
 };
 
 const setup = async () => {
-  users = await fetchJSON("/api/users");
+  if (!users) {
+    users = await fetchJSON("/api/users");
+  }
+
   renderUsers();
 
   const id = window.location.hash.slice(1);
   if (id) {
     reservations = await fetchJSON(`/api/users/${id}/reservations`);
+  } else {
+    reservations = [];
   }
 
-  restaurants = await fetchJSON("/api/restaurants");
+  if (!restaurants) {
+    restaurants = await fetchJSON("/api/restaurants");
+  }
+
   renderReservations();
   renderRestaurants();
 };
@@ -95,14 +103,4 @@ restaurantsList.addEventListener("click", async (ev) => {
   }
 });
 
-window.addEventListener("hashchange", async () => {
-  renderUsers();
-  const id = window.location.hash.slice(1);
-  if (id) {
-    reservations = await fetchJSON(`/api/users/${id}/reservations`);
-  } else {
-    reservations = [];
-  }
-  renderRestaurants();
-  renderReservations();
-});
+window.addEventListener("hashchange", setup);
