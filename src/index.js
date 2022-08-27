@@ -28,9 +28,13 @@ const renderUsers = () => {
 const renderRestaurants = () => {
   const html = restaurants
     .map((restaurant) => {
+      const count = reservations.filter(
+        (reservation) => reservation.restaurantId === restaurant.id
+      ).length;
+
       return `
     <li>
-      ${restaurant.name}
+      ${restaurant.name} (${count})
     </li>
   `;
     })
@@ -45,6 +49,12 @@ const setup = async () => {
   users = await fetchJSON("/api/users");
   // separate out renderUser data and call it
   renderUsers();
+
+  const id = window.location.hash.slice(1);
+  if (id) {
+    reservations = await fetchJSON(`/api/users/${id}/reservations`);
+  }
+  // console.log(reservations);
 
   restaurants = await fetchJSON("/api/restaurants");
   // separate out renderRestaurant data and call it
