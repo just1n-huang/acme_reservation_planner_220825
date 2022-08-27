@@ -33,7 +33,9 @@ const renderReservations = () => {
       );
       return `
       <li>
+      ${new Date(reservation.updatedAt).toLocaleString()}
         ${restaurant.name}
+        <button data-id='${reservation.id}'>x</button>
       </li>
     `;
     })
@@ -48,7 +50,7 @@ const renderRestaurants = () => {
         (reservation) => reservation.restaurantId === restaurant.id
       ).length;
       return `
-      <li data-id='${restaurant.id}'>
+      <li data-id='${restaurant.id}' ${count ? 'class="has-reservation"' : ""}>
         ${restaurant.name} (${count})
       </li>
     `;
@@ -98,6 +100,21 @@ restaurantsList.addEventListener("click", async (ev) => {
     });
     const reservation = await response.json();
     reservations.push(reservation);
+    renderReservations();
+    renderRestaurants();
+  }
+});
+
+reservationsList.addEventListener("click", async (ev) => {
+  const target = ev.target;
+  if (target.tagName === "BUTTON") {
+    const id = target.getAttribute("data-id");
+    await fetch(`/api/reservations/${id}`, {
+      method: "DELETE",
+    });
+    reservations = reservations.filter(
+      (reservation) => reservation.id !== id * 1
+    );
     renderReservations();
     renderRestaurants();
   }
