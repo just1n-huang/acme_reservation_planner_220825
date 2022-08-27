@@ -9,34 +9,55 @@ let users;
 const userList = document.querySelector("#users-list");
 const restaurantsList = document.querySelector("#restaurants-list");
 
+const renderUsers = () => {
+  const id = window.location.hash.slice(1);
+  const html = users
+    .map((user) => {
+      return ` 
+      <li class =${id * 1 === user.id ? "selected" : ""}>
+        <a href ='#${user.id}'> 
+        ${user.name}
+        </a>
+      </li>
+    `;
+    })
+    .join("");
+  userList.innerHTML = html;
+};
+
+const renderRestaurants = () => {
+  const html = restaurants
+    .map((restaurant) => {
+      return `
+    <li>
+      ${restaurant.name}
+    </li>
+  `;
+    })
+    .join("");
+  restaurantsList.innerHTML = html;
+};
+
 const setup = async () => {
   // console.log("starting");
   // fetch is a restful web api
 
   users = await fetchJSON("/api/users");
-
-  const htmlUsers = users
-    .map((user) => {
-      return `
-    <li>${user.name}</li>
-    `;
-    })
-    .join("");
-  userList.innerHTML = htmlUsers;
+  // separate out renderUser data and call it
+  renderUsers();
 
   restaurants = await fetchJSON("/api/restaurants");
-
-  const htmlRestaurants = restaurants
-    .map((restaurant) => {
-      return `
-      <li>
-        ${restaurant.name}
-      </li>
-    `;
-    })
-    .join("");
-  restaurantsList.innerHTML = htmlRestaurants;
-  console.log(htmlRestaurants);
+  // separate out renderRestaurant data and call it
+  renderRestaurants();
 };
 
 setup();
+
+// notes
+// in a client side application you will end up getting and rendering that data
+// separate out the getting the data and rendering the data
+
+window.addEventListener("hashchange", () => {
+  renderUsers();
+  renderRestaurants();
+});
