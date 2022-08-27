@@ -11,9 +11,10 @@ const restaurantsList = document.querySelector("#restaurants-list");
 
 const setup = async () => {
   // console.log("starting");
-  // fetch is a web api
-  // a restful api
+  // fetch is a restful web api
+
   users = await fetchJSON("/api/users");
+
   const htmlUsers = users
     .map((user) => {
       return `
